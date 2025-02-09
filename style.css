@@ -1,0 +1,45 @@
+body{
+    background-color: #000000;
+}
+
+.primaryText{
+    color: white;
+    font-family: "IBM Plex Mono", serif;
+    font-weight: 500;
+    font-style: normal;
+    font-size: 13px;
+}
+
+.headerInfo{
+    width: 100%;
+
+}
+
+.textEditor{
+    color: white;
+    font-family: "IBM Plex Mono", serif;
+    font-weight: 500;
+    font-style: normal;
+    display: flex;
+    flex-direction: column;
+    font-size: 13px;
+}
+
+.inputArea{
+    color: white;
+    background-color: #000000;
+    border: 0px;
+    position: fixed;
+    bottom: 5px;
+    width: 100%;
+    height: 40px;
+    
+}
+
+.outputArea{
+    padding-bottom: 40px;
+}
+
+.logo{
+    margin: 1px;
+}
