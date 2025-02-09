@@ -262,7 +262,6 @@ document.addEventListener("DOMContentLoaded", () => {
             activeOutput = true;
             return typeLineSystem(`[SYS]: Command could not be performed, caused by: file corrupted.`);
         } if(filename === "girlfriend_is_better.ths"){
-            commandInput.disabled = true;
             typeLineSystem(`[SYS]: Loading ${filename}...`);
             // Simulate lyrics appearing slowly
             const lyrics = [
@@ -334,8 +333,8 @@ document.addEventListener("DOMContentLoaded", () => {
             ];
             const bias = 0.97;
             const audio = new Audio("GIB.mp3");
-            audio.play().catch(error => console.error("Playback error", error));
-
+            audio.play().then(async () => {
+            commandInput.disabled = true;
             for(let i = 0; i < lyrics.length; i++){
                 const delay = delays[i];
                 await new Promise(res => setTimeout(res, delay*bias));
@@ -345,9 +344,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 typeLineSystem("[SYS]: girlfriend_is_better.ths - Audio playback completed.")
                 commandInput.disabled = false;
             })
+            }).catch(error => console.error("Playback error", error));
+
+
 
         }   if(filename === "born_under_punches.ths"){
-            commandInput.disabled = true;
             typeLineSystem(`[SYS]: Loading ${filename}...`);
             // Simulate lyrics appearing slowly
             const lyrics = [
@@ -431,7 +432,8 @@ document.addEventListener("DOMContentLoaded", () => {
             ];
 
             const audio = new Audio("BUP.mp3");
-            audio.play().catch(error => console.error("Playback error", error));
+            audio.play().then(async () => {
+            commandInput.disabled = true;
             const bias = 0.99;
             for(let i = 0; i < lyrics.length; i++){
                 const delay = delays[i];
@@ -443,10 +445,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 typeLineSystem("[SYS]: born_under_punches.ths - Audio playback completed.")
                 commandInput.disabled = false;
             })
+            }).catch(error => console.error("Playback error", error));
+
 
         }
         if(filename === "seen_and_not_seen.ths"){
-            commandInput.disabled = true;
             typeLineSystem(`[SYS]: Loading ${filename}...`);
             const lyrics = [
                 "He would see faces in movies, on TV, in magazines, and in books",
@@ -486,7 +489,8 @@ document.addEventListener("DOMContentLoaded", () => {
             ];
 
             const audio = new Audio("SANS.mp3");
-            audio.play().catch(error => console.error("Playback error", error));
+            audio.play().then(async () => {
+            commandInput.disabled = true;
             const bias = 1;
             for(let i = 0; i < lyrics.length; i++){
                 const delay = delays[i];
@@ -498,9 +502,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 typeLineSystem("[SYS]: seen_and_not_seen.ths - Audio playback completed.")
                 commandInput.disabled = false;
             })
+            }).catch(error => console.error("Playback error", error));
 
         } if(filename === "once_in_a_lifetime.ths"){
-            commandInput.disabled = true;
             typeLineSystem(`[SYS]: Loading ${filename}...`);
             // Simulate lyrics appearing slowly
             const lyrics = [
@@ -632,7 +636,8 @@ document.addEventListener("DOMContentLoaded", () => {
             ];
 
             const audio = new Audio("OIAL.mp3");
-            audio.play().catch(error => console.error("Playback error", error));
+            audio.play().then(async () => {
+            commandInput.disabled = true;
             const bias = 1;
             for(let i = 0; i < lyrics.length; i++){
                 const delay = delays[i];
@@ -644,11 +649,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 typeLineSystem("[SYS]: once_in_a_lifetime.ths - Audio playback completed.")
                 commandInput.disabled = false;
             })
+            }).catch(error => console.error("Playback error", error));
 
         }
 
         if(filename === "this_must_be_the_place.ths"){
-            commandInput.disabled = true;
             typeLineSystem(`[SYS]: Loading ${filename}...`);
             // Simulate lyrics appearing slowly
             const lyrics = [
@@ -706,9 +711,9 @@ document.addEventListener("DOMContentLoaded", () => {
             ];
 
             const audio = new Audio("TMBTP.mp3");
-            audio.play().catch(error => console.error("Playback error", error));
-
-            for(let i = 0; i < lyrics.length; i++){
+            audio.play().then(async () => {
+                commandInput.disabled = true;
+                for(let i = 0; i < lyrics.length; i++){
                 const delay = delays[i];
                 await new Promise(res => setTimeout(res, delay));
                 await typeLineLyric(lyrics[i]);
@@ -717,6 +722,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 typeLineSystem("[SYS]: this_must_be_the_place.ths - Audio playback completed.")
                 commandInput.disabled = false;
             })
+            }).catch(error => console.error("Playback error", error));
+
+
 
         }
 
