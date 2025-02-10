@@ -3,6 +3,80 @@ document.addEventListener("DOMContentLoaded", () => {
     const commandInput = document.querySelector(".inputArea");
     const primaryText = document.querySelector(".primaryText");
     let activeOutput = false;
+    const messageMix = "Stop messing with the mixes.";
+    const messageLogin = "Strange login activity";
+    const savedLogin = localStorage.getItem("loginString");
+    let authorized = false;
+    let login = "";
+    if (savedLogin){
+        console.log("RETRIEVED LOGIN:" + savedLogin);
+        authorized = true;
+        login = savedLogin;
+        commandInput.setAttribute("placeholder", `Insert command here (as ${login})`);
+    } else{
+        console.log("NO LOGIN FOUND");
+        authorized = false;
+        login = "";
+    }
+
+    let messages = {
+        messageMix: {seen: false},
+        messageLogin: {seen: false}
+    }
+
+    Object.keys(messages).forEach((message) => {
+        if(localStorage.getItem(message) === "seen"){
+            messages[message].seen = true;
+        }
+    })
+
+    const msgMixLines = [
+        "FROM: beno [beno@172.64.147.203]",
+        "TO: dbyrne@thios.com",
+        "DATE: October 7, 1980",
+        "SUBJECT: Stop messing with the records.",
+        "‎",
+        "David,",
+        "‎",
+        "We got your latest version of the album. We are, for the lack of a better word, concerned.",
+        "What happened to the chorus? What is going on with the verses? What happened to normal song structures??",
+        "‎",
+        "We need something radio-friendly, not this, man. We can't sell a record that sounds like you didn't know what you were doing.",
+        "Please, just stop re-inventing the wheel already.",
+        "‎",
+        "- B.E."
+    ]
+
+    const now = new Date();
+    const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    }
+
+    const formattedDate = now.toLocaleDateString('en-US', options);
+
+    const msgLoginLines = [
+        "FROM: sysadmin [sysadmin@172.64.147.203]",
+        "TO: dbyrne@thios.com",
+        `DATE: ${formattedDate}`, //TODO: implement dynamic date handling.
+        "SUBJECT: Strange login activity.",
+        "‎",
+        "David,",
+        "‎",
+        "Seeing some weird activity in the system right now. Someone named 'alexB' just logged in?",
+        "Says here they have approved access, but how? The system was dead for ages.",
+        "There's no way someone could even apply for the beta test, we've shut down the website.",
+        "‎",
+        "I ran a quick trace, but everything that came out was a ping from our local servers.",
+        "Tried deleting their credentials as well, but the system just won't let me.",
+        "Please visit the office of THL so I could tell you more about this, or to get any information, really.",
+        "‎",
+        "- Harold A. Armenta, junior system administrator."
+    ]
+
+    const unseenMessageKeys = Object.keys(messages).filter(key => messages[key].seen === false);
+    console.log(unseenMessageKeys);
 
     commandInput.classList.add("terminalInput");
     commandInput.focus();
@@ -25,6 +99,8 @@ document.addEventListener("DOMContentLoaded", () => {
     function scrollToBottom() {
         outputArea.scrollTop = outputArea.scrollHeight;
     }
+
+
 
     async function establishBridgeLines(){
         activeOutput = true;
@@ -58,13 +134,77 @@ document.addEventListener("DOMContentLoaded", () => {
             await delay(500)
         }
         activeOutput = false;
-        bootSequence();
+        if(authorized === false){
+            logIn();
+        } else{
+            if (savedLogin === "alexB"){
+                bootSequence();
+            }
+            else{
+                bootSequenceDB();
+            }
+        }
+        
+    }
+
+    async function logIn(){
+        const greetingLine = "[SYS]: Please, enter your username to log in.";
+        typeLineSystem(greetingLine);
+        enableTerminal();
+    }
+
+    async function bootSequenceDB() {
+        const bootLines = [
+            "Welcome to THIOS v0.983",
+            "(C) 1983-1991 Talking Heads Labs. All rights reserved.",
+            "",
+            "Booting up secondary requirements...",
+            "[SYS]: Getting administrator permissions for: dbyrne",
+            "[SYS]: Administrator permissions granted: dbyrne",
+            `[SYS]: ${Object.keys(files).length} audio files detected.`,
+            "[SYS]: Scanning audio files..."
+        ];
+
+        const bootWarning = `[SYS]: WARNING! ${countCorruptedFiles()} audio files corrupted.`;
+
+        const bootLines2 = [
+            "[SYS]: Uptime: 0:00:02",
+            "[SYS]: Use `help` for available commands.",
+        ]
+
+        const messageNotificationLines = [
+            `[MSG]: ATTENTION! Currently you have ${countMessages()} messages in your inbox`,
+            "[MSG]: Type `inbox` to see your inbox."
+        ]
+
+        activeOutput = true;
+        for (let line of bootLines) {
+            typeLineSystem(line);
+            await delay(getRandomDelay(700, 2000));
+        }
+        if (countCorruptedFiles() > 0){
+            typeLineSystem(bootWarning);
+        } else if (countCorruptedFiles() === 0){
+            typeLineSystem("[SYS]: File integrity check: 0 issues found.");
+        }
+        for(let line of bootLines2){
+            typeLineSystem(line);
+            await delay(getRandomDelay(700, 2000));
+        }
+        if(countMessages !== 0){
+            for(let line of messageNotificationLines){
+                typeLineSystem(line);
+                await delay(getRandomDelay(700, 2000));
+            }
+        }
+        activeOutput = false;
+        enableTerminal();
     }
 
     async function bootSequence() {
         const bootLines = [
             "Welcome to THIOS v0.983",
-            "(C) 1983-2025 Talking Heads Labs. All rights reserved.",
+            "(C) 1983-1991 Talking Heads Labs. All rights reserved.",
             "",
             "Booting up secondary requirements...",
             "[SYS]: Getting administrator permissions for: alexB",
@@ -95,6 +235,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         
         activeOutput = false;
+
         enableTerminal();
     }
 
@@ -105,6 +246,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // Counts the number of corrupted files
     function countCorruptedFiles() {
         return Object.values(files).filter(file => file.corrupted).length;
+    }
+
+    function countMessages(){
+        return Object.values(messages).filter(message => message.seen === false).length;
     }
 
     // Prints a line with a typing effect FOR LYRICS
@@ -178,19 +323,63 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 else{
                     event.preventDefault();
-                    processCommand(commandInput.value.trim());
+                    if(authorized === true){
+                        processCommand(commandInput.value.trim());
+                        commandInput.value = "";
+                    }
+                    else {
+                        processLoginCommand(commandInput.value.trim());
+                        commandInput.value = "";
+                    }
                 }
             }
         });
     }
 
-    // Processes user commands
-    function processCommand(input) {
-        typeLineSystem("alexB> " + commandInput.value);
+    function processLoginCommand(input){
         commandInput.value = "";
         const args = input.split(" ");
         const command = args[0];
+        login = args.slice(1).join(" ");
+
+        if(command === "login"){
+            if(login === "alexB"){
+                authorized = true;
+                localStorage.setItem("loginString", "alexB");
+                commandInput.setAttribute("placeholder", "Insert command here (as alexB)");
+                login = "alexB";
+                bootSequence();
+            }
+            else if (login === "dbyrne"){
+                authorized = true;
+                localStorage.setItem("loginString", "dbyrne");
+                commandInput.setAttribute("placeholder", "Insert command here (as dbyrne)");
+                login = "dbyrne";
+                bootSequenceDB();
+            }
+            else{
+                typeLineSystem("Sorry, you are not authorized to perform this action (ERROR 0099B)");
+            }
+        } else {
+            typeLineSystem("Sorry, you are not authorized to perform this action (ERROR 0099A)");
+        }
+    }
+
+    // Processes user commands
+    function processCommand(input) {
+        const args = input.split(" ");
+        const command = args[0];
         const filename = args.slice(1).join(" ");
+        
+        if(login === "alexB"){
+            authorized = true;
+            typeLineSystem("alexB@THIOS> " + commandInput.value);
+        } else if (login === "dbyrne"){
+            authorized = true;
+            typeLineSystem("dbyrne@THIOS> " + commandInput.value);   
+        }
+
+        commandInput.value = "";
 
         if (command === "help") {
             stop
@@ -205,13 +394,101 @@ document.addEventListener("DOMContentLoaded", () => {
             scanFile(filename);
         } else if (command === "fix") {
             fixFile(filename);
-        } else {
+        } else if (command === "login"){
+            typeLineSystem("[SYS]: You are already logged in. Use `logout` to log out and log in again. If the issue persists, please contact our customer support team or try again later.")
+        } else if (command === "logout"){
+            logOut();
+        } else if (command === "inbox"){
+            if (login === "alexB"){
+                typeLineSystem("[SYS]: Sorry, you are not authorized to use the inbox functionality. If you believe you are, please contact our customer support team or try again later.")
+            } else if (login === "dbyrne"){
+                if(unseenMessageKeys.length > 0){
+                    showInbox();
+                } else {
+                    typeLineSystem("[SYS]: Your inbox is empty.")
+                }
+                
+            }
+        } else if (command === "msg_view"){
+            if(login === "alexB"){
+                typeLineSystem("[SYS]: Sorry, you are not authorized to use the inbox functionality. If you believe you are, please contact our customer support team or try again later.")
+            } else if (login === "dbyrne"){
+                viewMessage(filename);
+            }
+        } else if (command === "respond"){
+            if(login === "alexB"){
+                typeLineSystem("[SYS]: Sorry, you are not authorized to use the inbox functionality. If you believe you are, please contact our customer support team or try again later.")
+            } else if (login === "dbyrne"){
+                typeLineSystem("[SYS]: Sorry, there was an error processing your request. Caused by: 500 INTERNAL_SERVER_ERROR. If the issue persists, please contact our customer support or try again later.")
+            }
+        }
+         else {
             activeOutput = true;
             typeLineSystem(`[SYS]: Unknown command. Type 'help' for available commands.`);
             activeOutput = false;
         }
-
         scrollToBottom();
+    }
+
+    async function showInbox(){
+        activeOutput = true;
+        for(let i = 0; i < unseenMessageKeys.length; i++){
+            if(unseenMessageKeys[i] === "messageMix"){
+                typeLineSystem(`INDEX: [${i}]`);
+                for(let i = 0; i < 4; i++){
+                    typeLineSystem(msgMixLines[i]);
+                    await delay(500);
+                }
+                typeLineSystem("---------");
+            } else if(unseenMessageKeys[i] === "messageLogin"){
+                typeLineSystem(`INDEX: [${i}]`);
+                for(let i = 0; i < 4; i++){
+                    typeLineSystem(msgLoginLines[i]);
+                    await delay(500);
+                }
+                typeLineSystem("---------");
+            }
+
+        }
+
+        typeLineSystem("[SYS]: To see a specific message, use `msg_view [INDEX]` without the square brackets.");
+        activeOutput = false;
+    }
+
+    async function viewMessage(id){
+        activeOutput = true;
+        if(!id){
+            typeLineSystem("[SYS]: Error using `msg_view`, this command requires an index.")
+        }
+        if(unseenMessageKeys[id] === "messageMix"){
+            typeLineSystem("---------");
+            for(let i = 0; i < msgMixLines.length; i++){
+                typeLineSystem(msgMixLines[i]);
+                await delay(700);
+            }
+
+            typeLineSystem("---------");
+        }
+        else if(unseenMessageKeys[id] === "messageLogin"){
+            typeLineSystem("---------");
+            for(let i = 0; i < msgLoginLines.length; i++){
+                typeLineSystem(msgLoginLines[i]);
+                await delay(700);
+            }
+            typeLineSystem("---------");
+        }
+        typeLineSystem("[SYS]: To respond to this message, use `respond [CONTENT]`.")
+        activeOutput = false;
+    }
+
+    function logOut(){
+        activeOutput = true;
+        authorized = false;
+        login = "";
+        localStorage.removeItem("loginString");
+        commandInput.setAttribute("placeholder", "Insert command here")
+        typeLineSystem("You have been successfully logged out. Please use `login [USERNAME]` to log back in.")
+        activeOutput = false;
     }
 
     async function displayHelp() {
@@ -221,7 +498,11 @@ document.addEventListener("DOMContentLoaded", () => {
             "    choose [FILENAME]    INTERACT WITH SELECTED FILE",
             "    scan [FILENAME]      ANALYZE SELECTED FILE FOR POTENTIAL ERRORS",
             "    fix [FILENAME]       ATTEMPT TO FIX DEFECTIVE FILE",
-            "    help                 GET LIST OF AVAILABLE COMMANDS"
+            "    help                 GET LIST OF AVAILABLE COMMANDS",
+            "    inbox                GET LIST OF NEW MESSAGES",
+            "    msg_view [NUMBER]    VIEW THE FULL MESSAGE",
+            "    respond [CONTENT]    RESPOND TO THE CURRENT MESSAGE",
+            "    logout               LOG OUT OF THE SYSTEM"
         ];
         activeOutput = true;
         for (let line of helpLines) {
