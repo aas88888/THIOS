@@ -612,7 +612,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 1300, 2100, 1600, 1500, 1800, 1900, 2000, 2000, 1400, 1300, 1900, 2000, 2000, 5400, 1500, 2000, 1400, 2200,
                 1800, 1800, 1400, 34000, 1600, 1600, 1400, 1800, 1600, 1800, 1700, 1600, 1600, 1600, 1700, 1700, 1700, 1700, 1700
             ];
-            const bias = 0.97;
+            const bias = 0.99;
             const audio = new Audio("GIB.mp3");
             audio.play().then(async () => {
             commandInput.disabled = true;
