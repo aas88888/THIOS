@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const messageMix = "Stop messing with the mixes.";
     const messageLogin = "Strange login activity";
     const savedLogin = localStorage.getItem("loginString");
+    let terminalEnabled = false;
     let authorized = false;
     let login = "";
     if (savedLogin){
@@ -31,20 +32,20 @@ document.addEventListener("DOMContentLoaded", () => {
     })
 
     const msgMixLines = [
-        "FROM: beno [beno@172.64.147.203]",
+        "FROM: R.Simons [rsimons@sirerecords.com]",
         "TO: dbyrne@thios.com",
         "DATE: October 7, 1980",
         "SUBJECT: Stop messing with the records.",
         "‎",
         "David,",
         "‎",
-        "We got your latest version of the album. We are, for the lack of a better word, concerned.",
+        "We got your latest version of the album. The label is, for the lack of a better word, concerned.",
         "What happened to the chorus? What is going on with the verses? What happened to normal song structures??",
         "‎",
-        "We need something radio-friendly, not this, man. We can't sell a record that sounds like you didn't know what you were doing.",
+        "We need something radio-friendly, not this, man. I get that you and Brian want to 'experiment' a bit, but we can't sell a record that sounds like you didn't know what you were doing.",
         "Please, just stop re-inventing the wheel already.",
         "‎",
-        "- B.E."
+        "- R. Simons, Sire Records."
     ]
 
     const now = new Date();
@@ -148,8 +149,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function logIn(){
+        activeOutput = true;
         const greetingLine = "[SYS]: Please, enter your username to log in.";
         typeLineSystem(greetingLine);
+        activeOutput = false;
         enableTerminal();
     }
 
@@ -198,6 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
         activeOutput = false;
+        commandInput.
         enableTerminal();
     }
 
@@ -207,8 +211,8 @@ document.addEventListener("DOMContentLoaded", () => {
             "(C) 1983-1991 Talking Heads Labs. All rights reserved.",
             "",
             "Booting up secondary requirements...",
-            "[SYS]: Getting administrator permissions for: alexB",
-            "[SYS]: Administrator permissions granted: alexB",
+            "[SYS]: Getting user permissions for: alexB",
+            "[SYS]: User permissions granted: alexB",
             `[SYS]: ${Object.keys(files).length} audio files detected.`,
             "[SYS]: Scanning audio files..."
         ];
@@ -274,29 +278,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    
-    // Prints a line with a typing effect FOR ONCE IN A LIFETIME ONLY (Because these are faster)
-    function typeLineLyricOIAL(text) {
-        return new Promise((resolve) => {
-            let lineElement = document.createElement("p");
-            terminal.appendChild(lineElement);
-            let i = 0;
-
-            function typeCharacter() {
-                activeOutput = true;
-                if (i < text.length) {
-                    lineElement.innerHTML += text[i++];
-                    setTimeout(typeCharacter, 20); // Typing speed
-                } else {
-                    resolve();
-                    activeOutput = false;
-                }
-            }
-            typeCharacter();
-            terminal.scrollIntoView({behavior: 'smooth', block: 'end'});
-        });
-    }
-
     //Prints a line FOR SYSTEM MESSAGES. They appear one line at a time.
     function typeLineSystem(text){
         let lineElement = document.createElement("p");
@@ -315,7 +296,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Enables terminal input
     function enableTerminal() {
-        commandInput.addEventListener("keydown", (event) => {
+        if(terminalEnabled === false){
+            commandInput.addEventListener("keydown", function enterKey(event) {
             if (event.key === "Enter") {
                 if(activeOutput){
                     event.preventDefault();
@@ -334,7 +316,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
         });
+        terminalEnabled = true;
+        console.log("Terminal enabled: " + terminalEnabled);
+        }else{
+            console.log("Attempt at enabling the terminal unsuccessful, caused by: terminal already enabled.")
+        }
+
     }
+    
 
     function processLoginCommand(input){
         commandInput.value = "";
@@ -355,6 +344,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 localStorage.setItem("loginString", "dbyrne");
                 commandInput.setAttribute("placeholder", "Insert command here (as dbyrne)");
                 login = "dbyrne";
+                commandInput.removeEventListener("keydown", enterKey);
+                console.log("Terminal disabled");
                 bootSequenceDB();
             }
             else{
@@ -416,11 +407,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 viewMessage(filename);
             }
         } else if (command === "respond"){
+            activeOutput = true;
             if(login === "alexB"){
                 typeLineSystem("[SYS]: Sorry, you are not authorized to use the inbox functionality. If you believe you are, please contact our customer support team or try again later.")
             } else if (login === "dbyrne"){
                 typeLineSystem("[SYS]: Sorry, there was an error processing your request. Caused by: 500 INTERNAL_SERVER_ERROR. If the issue persists, please contact our customer support or try again later.")
             }
+            activeOutput = false;
         }
          else {
             activeOutput = true;
@@ -542,473 +535,457 @@ document.addEventListener("DOMContentLoaded", () => {
         if (files[filename].corrupted) {
             activeOutput = true;
             return typeLineSystem(`[SYS]: Command could not be performed, caused by: file corrupted.`);
-        } if(filename === "girlfriend_is_better.ths"){
-            typeLineSystem(`[SYS]: Loading ${filename}...`);
-            // Simulate lyrics appearing slowly
-            const lyrics = [
-                "I!",
-                "Who took the money?",
-                "Who took the money away?",
-                "I, I, I, I,",
-                "it's always showtime,",
-                "Here at the edge of the stage",
-                "And I, I, I, wake up and wonder",
-                "What was the place, what was the name?",
-                "We wanna wait, but here we go again",
-                "I,",
-                "Takes over slowly,",
-                "But doesn't last very long",
-                "I, I, I, I,",
-                "No need to worry",
-                "Everything's under control",
-                "O-U-T,",
-                "But no hard feelings",
-                "What do you know? Take you away",
-                "We're being taken for a ride again",
-                "I got a girlfriend that's better than that",
-                "She has the smoke in her eyes",
-                "She's coming up, going right through my heart",
-                "She's gonna give me surprise",
-                "I think it's right, better than this",
-                "I think you can if you like",
-                "I got a girlfriend with bows in her hair",
-                "And nothing is better than that! Is it?",
-                "Down, down in the basement",
-                "We hear the sound of machines",
-                "I, I, I'm ",
-                "Driving in circles",
-                "Come to my senses sometimes",
-                "Why, why, why, why start it over?",
-                "Nothing was lost, everything's free",
-                "I don't care how impossible it seems",
-                "Somebody calls you but you cannot hear",
-                "Get closer to be far away",
-                "And only one look and that's all that it takes",
-                "Maybe that's all that we need",
-                "All that it takes, I'll bet it's right",
-                "All it takes, if it's right",
-                "I got a girlfriend that's better than that",
-                "And she goes wherever she likes (there she goes)",
-                "I got a girlfriend that's better than that",
-                "Now everyone's getting involved",
-                "She's moving up, going right through my heart",
-                "We might not ever get caught",
-                "Going right through, try to stay cool",
-                "Going through, staying cool",
-                "I got a girlfriend, she's better than that",
-                "And nothing is better than you (wait a minute)",
-                "I got a girlfriend that's better than this",
-                "But you don't remember at all",
-                "As we get older and stop making sense",
-                "You won't find her waiting long",
-                "Stop making sense, stop making sense",
-                "Stop making sense, making sense",
-                "I got a girlfriend, she's better than that",
-                "And nothing is better than this (is it?)"
-        ];
-
-            const delays = [
-                4000, 2000, 1000, 2000, 1900, 500, 2000, 2000, 2000, 5000, 2500, 1000, 2000, 1300, 1300, 2000, 1500, 1100, 1800, 5600, 1300, 1600,
-                1300, 2100, 1600, 1500, 1800, 1900, 2000, 2000, 1400, 1300, 1900, 2000, 2000, 5400, 1500, 2000, 1400, 2200,
-                1800, 1800, 1400, 34000, 1600, 1600, 1400, 1800, 1600, 1800, 1700, 1600, 1600, 1600, 1700, 1700, 1700, 1700, 1700
-            ];
-            const bias = 1;
-            const audio = new Audio("GIB.mp3");
-            audio.play().then(async () => {
+        }if(filename === "girlfriend_is_better.ths"){
             commandInput.disabled = true;
-            for(let i = 0; i < lyrics.length; i++){
-                const delay = delays[i];
-                await new Promise(res => setTimeout(res, delay*bias));
-                await typeLineLyric(lyrics[i]);
-            }
-            audio.addEventListener("ended", () => {
-                typeLineSystem("[SYS]: girlfriend_is_better.ths - Audio playback completed.")
+            typeLineSystem(`[SYS]: Loading ${filename}...`);
+            const lyrics = [
+                {time: 4.0, text: "I!"},
+                {time: 6.1, text: "Who took the money?"},
+                {time: 8.3, text: "Who took the money away?"},
+                {time: 11.9, text: "I, I, I, I,"},
+                {time: 14.6, text: "it's always showtime,"},
+                {time: 16.7, text: "Here at the edge of the stage"},
+                {time: 20.0, text: "And I, I, I, wake up and wonder"},
+                {time: 24.0, text: "What was the place, what was the name?"},
+                {time: 29.0, text: "We wanna wait, but here we go again"},
+                {time: 36.0, text: "I,"},
+                {time: 38.5, text: "Takes over slowly,"},
+                {time: 40.5, text: "But doesn't last very long"},
+                {time: 44.5, text: "I, I, I, I,"},
+                {time: 47.0, text: "No need to worry"},
+                {time: 48.8, text: "Everything's under control"},
+                {time: 52.8, text: "O-U-T,"},
+                {time: 55.0, text: "But no hard feelings"},
+                {time: 57.0, text: "What do you know? Take you away"},
+                {time: 61.0, text: "We're being taken for a ride again"},
+                {time: 69.0, text: "I got a girlfriend that's better than that"},
+                {time: 73.0, text: "She has the smoke in her eyes"},
+                {time: 77.0, text: "She's coming up, going right through my heart"},
+                {time: 81.0, text: "She's gonna give me surprise"},
+                {time: 85.0, text: "I think it's right, better than this"},
+                {time: 89.5, text: "I think you can if you like"},
+                {time: 93.5, text: "I got a girlfriend with bows in her hair"},
+                {time: 97.0, text: "And nothing is better than that! Is it?"},
+                {time: 101.0, text: "Down, down in the basement"},
+                {time: 105.7, text: "We hear the sound of machines"},
+                {time: 109.0, text: "I, I, I'm "},
+                {time: 111.9, text: "Driving in circles"},
+                {time: 113.7, text: "Come to my senses sometimes"},
+                {time: 117.8, text: "Why, why, why, why start it over?"},
+                {time: 121.5, text: "Nothing was lost, everything's free"},
+                {time: 126.0, text: "I don't care how impossible it seems"},
+                {time: 134.0, text: "Somebody calls you but you cannot hear"},
+                {time: 137.7, text: "Get closer to be far away"},
+                {time: 141.5, text: "And only one look and that's all that it takes"},
+                {time: 145.8, text: "Maybe that's all that we need"},
+                {time: 150.0, text: "All that it takes, I'll bet it's right"},
+                {time: 154.0, text: "All it takes, if it's right"},
+                {time: 158.0, text: "I got a girlfriend that's better than that"},
+                {time: 161.8, text: "And she goes wherever she likes (there she goes)"},
+                {time: 198.0, text: "I got a girlfriend that's better than that"},
+                {time: 202.0, text: "Now everyone's getting involved"},
+                {time: 206.8, text: "She's moving up, going right through my heart"},
+                {time: 211.0, text: "We might not ever get caught"},
+                {time: 214.7, text: "Going right through, try to stay cool"},
+                {time: 218.5, text: "Going through, staying cool"},
+                {time: 222.9, text: "I got a girlfriend, she's better than that"},
+                {time: 226.7, text: "And nothing is better than you (wait a minute)"},
+                {time: 231.0, text: "I got a girlfriend that's better than this"},
+                {time: 234.0, text: "But you don't remember at all"},
+                {time: 239.0, text: "As we get older and stop making sense"},
+                {time: 243.0, text: "You won't find her waiting long"},
+                {time: 247.0, text: "Stop making sense, stop making sense"},
+                {time: 251.0, text: "Stop making sense, making sense"},
+                {time: 256.0, text: "I got a girlfriend, she's better than that"},
+                {time: 259.0, text: "And nothing is better than this (is it?)"}
+        ]
+
+            const audio = new Audio("GIB.mp3");
+            audio.play().then( async () => {
+                let lastLyricIndex = 0;
+                function checkLyrics(){
+                    const currentTime = audio.currentTime;
+                    for(let i = lastLyricIndex; i < lyrics.length; i++){
+                        if(currentTime >= lyrics[i].time){
+                            typeLineLyric(lyrics[i].text);
+                            lastLyricIndex = i + 1;
+                        }
+                    }
+                    if(!audio.ended){
+                        requestAnimationFrame(checkLyrics);
+                    } else {
+                        typeLineSystem("[SYS]: girlfriend_is_better.ths - Audio playback completed.")
                 commandInput.disabled = false;
-            })
+                    }
+                }
+                requestAnimationFrame(checkLyrics);
             }).catch(error => console.error("Playback error", error));
 
-
-
-        }   if(filename === "born_under_punches.ths"){
+        }  if(filename === "born_under_punches.ths"){
+            commandInput.disabled = true;
             typeLineSystem(`[SYS]: Loading ${filename}...`);
-            // Simulate lyrics appearing slowly
             const lyrics = [
-                "Take a look at these hands",
-                "Take a look at these hands!",
-                "The hand speaks",
-                "The hand of a government man",
-                "Well, I'm a tumbler",
-                "Born under punches",
-                "I'm so thin",
-                "All I want",
-                "Is to breathe",
-                "Won't you breathe",
-                "With me?",
-                "Find a little space",
-                "So we move in-between",
-                "And keep one step ahead",
-                "Of yourself",
-                "Don't you miss it? Don't you miss it?",
-                "Some 'a you people just about missed it!",
-                "Last time to make plans",
-                "Well, I'm a tumbler",
-                "I'm a government man",
-                "Never seen anything like that before",
-                "Falling bodies tumble 'cross the floor",
-                "When you get to where you wanna be",
-                "When you get to where you wanna be",
-                "Wooah, take a look at these hands, they're passing in-between us",
-                "Take a look at these hands!",
-                "Take a look at these hands! You don't have to mention it",
-                "No thanks",
-                "I'm a government man",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on, where the hand has been",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on (Got time?), and the heat goes on",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on, where the hand has been",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on (I'm not a drowning man), and the heat goes on",
-                "And the heat goes on (And I'm not a burning building), and the heat goes on (I'm a tumbler)",
-                "And the heat goes on (Drowning cannot hurt a man), where the hand has been",
-                "And the heat goes on (Fire cannot hurt a man), and the heat goes on (Not the government man)",
-                "And the heat goes on (All), and the heat goes on",
-                "And the heat goes on (I want is to breathe), and the heat goes on",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on, and the heat goes on",
-                "And the heat goes on, and the heat goes on"
-            ];
-
-            const delays = [
-                27000, 3200, 2600, 2400, 2600, 2600, 2600, 1500, 1500, 4000, 
-                2500, 4000, 2800, 2500, 2500, 4000, 900, 3800, 1800, 1800, 
-                1000, 5000, 6500, 6300, 6000, 1000, 2000, 1000, 1000, 41000, 
-                500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 
-                500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 
-                500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 
-                500, 500, 500, 500, 
+                {time: 27.0, text: "Take a look at these hands"},
+                {time: 32.0, text: "Take a look at these hands!"},
+                {time: 35.8, text: "The hand speaks"},
+                {time: 39.0, text: "The hand of a government man"},
+                {time: 43.8, text: "Well, I'm a tumbler"},
+                {time: 47.5, text: "Born under punches"},
+                {time: 51.2, text: "I'm so thin"},
+                {time: 52.8, text: "All I want"},
+                {time: 56.0, text: "Is to breathe"},
+                {time: 59.8, text: "(I'm too thin)"},
+                {time: 61.0, text: "Won't you breathe"},
+                {time: 64.7, text: "With me?"},
+                {time: 69.7, text: "Find a little space"},
+                {time: 73.5, text: "So we move in-between"},
+                {time: 78.0, text: "And keep one step ahead"},
+                {time: 81.0, text: "Of yourself"},
+                {time: 86.8, text: "Don't you miss it? Don't you miss it?"},
+                {time: 89.3, text: "Some 'a you people just about missed it!"},
+                {time: 95.0, text: "Last time to make plans"},
+                {time: 99.0, text: "Well, I'm a tumbler"},
+                {time: 102.5, text: "I'm a government man"},
+                {time: 104.0, text: "Never seen anything like that before"},
+                {time: 112.5, text: "Falling bodies tumble 'cross the floor"},
+                {time: 117.8, text: "(Well, I'm a tumbler!)"},
+                {time: 121.0, text: "When you get to where you wanna be"},
+                {time: 126.0, text: "(U-uh, thank you, thank you!)"},
+                {time: 129.8, text: "When you get to where you wanna be"},
+                {time: 134.0, text: "(U-uh, don't even mention it!)"},
+                {time: 138.0, text: "Wooah, take a look at these hands, they're passing in-between us"},
+                {time: 142.8, text: "Take a look at these hands!"},
+                {time: 146.5, text: "Take a look at these hands! You don't have to mention it"},
+                {time: 150.5, text: "No thanks"},
+                {time: 153.5, text: "I'm a government man"},
+                {time: 196.8, text: "And the heat goes on, and the heat goes on"},
+                {time: 201.0, text: "And the heat goes on, and the heat goes on"},
+                {time: 205.5, text: "And the heat goes on, where the hand has been"},
+                {time: 210.0, text: "And the heat goes on, and the heat goes on"},
+                {time: 214.0, text: "And the heat goes on (Got time?), and the heat goes on"},
+                {time: 218.0, text: "And the heat goes on, and the heat goes on"},
+                {time: 222.5, text: "And the heat goes on, where the hand has been"},
+                {time: 227.0, text: "And the heat goes on, and the heat goes on"},
+                {time: 231.0, text: "And the heat goes on (I'm not a drowning man), and the heat goes on"},
+                {time: 235.0, text: "And the heat goes on (And I'm not a burning building), and the heat goes on (I'm a tumbler)"},
+                {time: 239.0, text: "And the heat goes on (Drowning cannot hurt a man), where the hand has been"},
+                {time: 244.0, text: "And the heat goes on (Fire cannot hurt a man), and the heat goes on (Not the government man)"},
+                {time: 248.0, text: "And the heat goes on (All), and the heat goes on"},
+                {time: 252.0, text: "And the heat goes on (I want is to breathe), and the heat goes on (Thank you, thank you)"},
+                {time: 257.0, text: "And the heat goes on, and the heat goes on (Won't you breathe)"},
+                {time: 261.0, text: "And the heat goes on, and the heat goes on (With me?)"},
+                {time: 265.0, text: "And the heat goes on, and the heat goes on (Find a little space)"},
+                {time: 269.0, text: "And the heat goes on, and the heat goes on (So we move in-between) (I'm so thin)"},
+                {time: 273.5, text: "And the heat goes on, and the heat goes on (And keep one step ahead)"},
+                {time: 278.0, text: "And the heat goes on, and the heat goes on (Of yourself) (I'm catching up with myself!)"},
+                {time: 282.0, text: "And the heat goes on, and the heat goes on (All I want)"},
+                {time: 286.0, text: "And the heat goes on, and the heat goes on (Is to breathe)"},
+                {time: 291.0, text: "And the heat goes on, and the heat goes on (Won't you breathe)"},
+                {time: 295.0, text: "And the heat goes on, and the heat goes on (With me?) (Hands of a government man)"},
+                {time: 299.0, text: "And the heat goes on, and the heat goes on (Find a little space)"},
+                {time: 303.0, text: "And the heat goes on, and the heat goes on (So we move in-between)"},
+                {time: 307.5, text: "And the heat goes on, and the heat goes on (And keep one step ahead)"},
+                {time: 312.0, text: "And the heat goes on, and the heat goes on (Of yourself) (Don't you miss it, don't you miss it)"},
+                {time: 316.0, text: "And the heat goes on, and the heat goes on (All I want)"},
+                {time: 320.0, text: "And the heat goes on, and the heat goes on (Is to breathe)"},
+                {time: 324.0, text: "And the heat goes on, and the heat goes on (Won't you breathe)"},
+                {time: 328.0, text: "And the heat goes on, and the heat goes on (With me?)"},
+                {time: 333.0, text: "And the heat goes on, and the heat goes on (Find a little space)"},
+                {time: 337.0, text: "And the heat goes on, and the heat goes on (So we move in-between)"},
+                {time: 341.0, text: "And the heat goes on, and the heat goes on (And keep one step ahead)"},
+                {time: 345.0, text: "And the heat goes on (Of yourself)"}
             ];
 
             const audio = new Audio("BUP.mp3");
-            audio.play().then(async () => {
-            commandInput.disabled = true;
-            const bias = 0.99;
-            for(let i = 0; i < lyrics.length; i++){
-                const delay = delays[i];
-                await new Promise(res => setTimeout(res, delay*bias));
-                await typeLineLyric(lyrics[i]);
-                
-            }
-            audio.addEventListener("ended", () => {
-                typeLineSystem("[SYS]: born_under_punches.ths - Audio playback completed.")
+            audio.play().then( async () => {
+                let lastLyricIndex = 0;
+                function checkLyrics(){
+                    const currentTime = audio.currentTime;
+                    for(let i = lastLyricIndex; i < lyrics.length; i++){
+                        if(currentTime >= lyrics[i].time){
+                            typeLineLyric(lyrics[i].text);
+                            lastLyricIndex = i + 1;
+                        }
+                    }
+                    if(!audio.ended){
+                        requestAnimationFrame(checkLyrics);
+                    } else {
+                        typeLineSystem("[SYS]: born_under_punches.ths - Audio playback completed.")
                 commandInput.disabled = false;
-            })
+                    }
+                }
+                requestAnimationFrame(checkLyrics);
             }).catch(error => console.error("Playback error", error));
 
-
-        }
-        if(filename === "seen_and_not_seen.ths"){
-            typeLineSystem(`[SYS]: Loading ${filename}...`);
-            const lyrics = [
-                "He would see faces in movies, on TV, in magazines, and in books",
-                "He thought that some of these faces might be right for him",
-                "And that through the years, by keeping an ideal facial structure fixed in his mind",
-                "Or somewhere in the back of his mind",
-                "That he might, by force of will, cause his face to approach those of his ideal",
-                "The change would be very subtle",
-                "It might take ten years or so",
-                "Gradually his face would change its shape",
-                "A more hooked nose",
-                "Wider, thinner lips",
-                "Beady eyes",
-                "A larger forehead",
-                "He imagined that this was an ability he shared with most other people",
-                "They had also molded their faces according to some ideal",
-                "Maybe they imagined that their new face",
-                "Would better suit their personality",
-                "Or maybe they imagined that their personality",
-                "Would be forced to change to fit the new appearance",
-                "This is why first impressions are often correct",
-                "Although some people might have made mistakes",
-                "They may have arrived at an appearance",
-                "That bears no relationship to them",
-                "They may have picked an ideal appearance",
-                "Based on some childish whim, or momentary impulse",
-                "Some may have gotten halfway there",
-                "And then changed their minds",
-                "He wonders if he too",
-                "Might have made a similar mistake"
-            ];
-
-            const delays = [
-                20000, 2500, 1100, 500, 1500, 2000, 2000, 3000, 1500, 1500, 
-                2300, 3300, 13000, 2000, 900, 500, 1000, 500, 5000, 7000, 
-                2000, 500, 1000, 500, 2000, 2000, 12000, 500
-            ];
-
-            const audio = new Audio("SANS.mp3");
-            audio.play().then(async () => {
+        }if(filename === "seen_and_not_seen.ths"){
             commandInput.disabled = true;
-            const bias = 1;
-            for(let i = 0; i < lyrics.length; i++){
-                const delay = delays[i];
-                await new Promise(res => setTimeout(res, delay*bias));
-                await typeLineLyric(lyrics[i]);
-                
-            }
-            audio.addEventListener("ended", () => {
-                typeLineSystem("[SYS]: seen_and_not_seen.ths - Audio playback completed.")
-                commandInput.disabled = false;
-            })
-            }).catch(error => console.error("Playback error", error));
-
-        } if(filename === "once_in_a_lifetime.ths"){
             typeLineSystem(`[SYS]: Loading ${filename}...`);
             // Simulate lyrics appearing slowly
             const lyrics = [
-                "You may find yourself",
-                "Living in a shotgun shack",
-                "And you may find yourself",
-                "In another part of the world",
-                "And you may find yourself",
-                "Behind the wheel of a large automobile",
-                "And you may find yourself in a beautiful house",
-                "With a beautiful wife",
-                "And you may ask yourself",
-                "'Well ... how did I get here?'",
-                "Letting the days go by!",
-                "Let the water hold me down",
-                "Letting the days go by!",
-                "Water flowing underground",
-                "Into the blue again",
-                "After the money's gone",
-                "Once in a lifetime!",
-                "Water flowing underground",
-                "And you may ask yourself",
-                "'How do I work this?'",
-                "And you may ask yourself",
-                "'Where is that large automobile?'",
-                "And you may tell yourself",
-                "'This is not my beautiful house!'",
-                "And you may tell yourself",
-                "'This is not my beautiful wife!'",
-                "Letting the days go by!",
-                "Let the water hold me down",
-                "Letting the days go by!",
-                "Water flowing underground",
-                "Into the blue again",
-                "After the money's gone",
-                "Once in a lifetime!",
-                "Water flowing underground",
-                "Same as it ever was",
-                "Same as it ever was",
-                "Same as it ever was",
-                "Same as it ever was",
-                "Same as it ever was",
-                "Same as it ever was",
-                "Same as it ever was",
-                "Same as it ever was",
-                "Water dissolving, and water removing!",
-                "There is water at the bottom of the ocean",
-                "Under the water, carry the water",
-                "Remove the water at the bottom of the ocean",
-                "Water dissolving, and water removing!",
-                "Letting the days go by!",
-                "Let the water hold me down",
-                "Letting the days go by!",
-                "Water flowing underground",
-                "Into the blue again",
-                "Into the silent water",
-                "Under the rocks and stones",
-                "There is water underground",
-                "Letting the days go by!",
-                "Let the water hold me down",
-                "Letting the days go by!",
-                "Water flowing underground",
-                "Into the blue again",
-                "After the money's gone",
-                "Once in a lifetime!",
-                "Water flowing underground",
-                "You may ask yourself",
-                "'What is that beautiful house?'",
-                "You may ask yourself",
-                "'Where does that highway go to?'",
-                "And you may ask yourself",
-                "'Am I right? Am I wrong?'",
-                "And you may say to yourself",
-                "'My God! What have I done?!'",
-                "Letting the days go by!",
-                "Let the water hold me down",
-                "Letting the days go by",
-                "Water flowing underground",
-                "Into the blue again",
-                "Into the silent water",
-                "Under the rocks and stones",
-                "There is water underground",
-                "Letting the days go by!",
-                "Let the water hold me down",
-                "Letting the days go by!",
-                "Water flowing underground",
-                "Into the blue again",
-                "After the money's gone",
-                "Once in a lifetime!",
-                "Water flowing underground",
-                "Same as it ever was",
-                "Same as it ever was",
-                "Same as it ever was",
-                "And look where my hand was",
-                "Time isn't holding up",
-                "Time isn't after us",
-                "Same as it ever was",
-                "Same as it ever was",
-                "Same as it ever was",
-                "Same as it ever was",
-                "Same as it ever was",
-                "Same as it ever was",
-                "Letting the days go by",
-                "Same as it ever was",
-                "And here, a twister comes, here comes the twister",
-                "Same as it ever was (Letting the days go by!)",
-                "Same as it ever was",
-                "Same as it ever was (Letting the days go by!)",
-                "Same as it ever was",
-                "Once in a lifetime!",
-                "Let the water hold me down",
-                "Letting the days go by!",
-                "Water flowing underground",
-                "Into the blue again"
+                {time: 19.7, text: "He would see faces in movies, on TV, in magazines, and in books"},
+                {time: 27.5, text: "He thought that some of these faces might be right for him"},
+                {time: 31.5, text: "And that through the years, by keeping an ideal facial structure fixed in his mind"},
+                {time: 37.8, text: "Or somewhere in the back of his mind"},
+                {time: 40.5, text: "That he might, by force of will, cause his face to approach those of his ideal"},
+                {time: 49.7, text: "The change would be very subtle"},
+                {time: 54.3, text: "It might take ten years or so"},
+                {time: 59.7, text: "Gradually his face would change its shape"},
+                {time: 63.0, text: "A more hooked nose"},
+                {time: 65.8, text: "Wider, thinner lips"},
+                {time: 69.7, text: "Beady eyes"},
+                {time: 73.8, text: "A larger forehead"},
+                {time: 88.5, text: "He imagined that this was an ability he shared with most other people"},
+                {time: 93.8, text: "They had also molded their faces according to some ideal"},
+                {time: 98.5, text: "Maybe they imagined that their new face"},
+                {time: 101.0, text: "Would better suit their personality"},
+                {time: 103.5, text: "Or maybe they imagined that their personality"},
+                {time: 108.0, text: "Would be forced to change to fit the new appearance"},
+                {time: 118.0, text: "This is why first impressions are often correct"},
+                {time: 127.7, text: "Although some people might have made mistakes"},
+                {time: 132.7, text: "They may have arrived at an appearance"},
+                {time: 135.5, text: "That bears no relationship to them"},
+                {time: 138.5, text: "They may have picked an ideal appearance"},
+                {time: 141.3, text: "Based on some childish whim, or momentary impulse"},
+                {time: 147.9, text: "Some may have gotten halfway there"},
+                {time: 152.2, text: "And then changed their minds"},
+                {time: 166.8, text: "He wonders if he too"},
+                {time: 168.9, text: "Might have made a similar mistake"}
             ];
 
-            const delays = [
-                17000, 1200, 2000, 1500, 1500, 1300, 1500, 2000, 1500, 1500, 
-                1700, 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300, 
-                1300, 1300, 1300, 1300, 1300, 1300, 1000, 1100, 1200, 1300, 
-                1300, 1300, 1300, 1300, 1500, 1500, 1500, 1500, 1500, 1500, 
-                1500, 1500, 1500, 2000, 2000, 2000, 2000, 1300, 1300, 1300, 
-                1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300, 
-                1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300, 1300, 
-                1000, 1300, 1300, 1350, 1300, 1300, 1300, 1300, 1300, 1300, 
-                1300, 1300, 1300, 1300, 1300, 1300, 1300, 1500, 1500, 1500, 
-                1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 
-                1500, 1500, 2000, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 100,
+            const audio = new Audio("SANS.mp3");
+            audio.play().then( async () => {
+                let lastLyricIndex = 0;
+                function checkLyrics(){
+                    const currentTime = audio.currentTime;
+                    for(let i = lastLyricIndex; i < lyrics.length; i++){
+                        if(currentTime >= lyrics[i].time){
+                            typeLineLyric(lyrics[i].text);
+                            lastLyricIndex = i + 1;
+                        }
+                    }
+                    if(!audio.ended){
+                        requestAnimationFrame(checkLyrics);
+                    } else {
+                        typeLineSystem("[SYS]: seen_and_not_seen.ths - Audio playback completed.")
+                commandInput.disabled = false;
+                    }
+                }
+                requestAnimationFrame(checkLyrics);
+            }).catch(error => console.error("Playback error", error));
+
+        } if(filename === "once_in_a_lifetime.ths"){
+            commandInput.disabled = true;
+            typeLineSystem(`[SYS]: Loading ${filename}...`);
+            // Simulate lyrics appearing slowly
+            const lyrics = [
+                {time: 17.0, text: "You may find yourself"},
+                {time: 19.3, text: "Living in a shotgun shack"},
+                {time: 21.7, text: "And you may find yourself"},
+                {time: 23.8, text: "In another part of the world"},
+                {time: 25.8, text: "And you may find yourself"},
+                {time: 27.8, text: "Behind the wheel of a large automobile"},
+                {time: 31.0, text: "And you may find yourself in a beautiful house"},
+                {time: 35.0, text: "With a beautiful wife"},
+                {time: 37.0, text: "And you may ask yourself"},
+                {time: 38.5, text: "'Well ... how did I get here?'"},
+                {time: 41.3, text: "Letting the days go by!"},
+                {time: 43.5, text: "Let the water hold me down"},
+                {time: 45.5, text: "Letting the days go by!"},
+                {time: 47.5, text: "Water flowing underground"},
+                {time: 49.5, text: "Into the blue again"},
+                {time: 51.3, text: "After the money's gone"},
+                {time: 53.8, text: "Once in a lifetime!"},
+                {time: 56.0, text: "Water flowing underground"},
+                {time: 57.8, text: "And you may ask yourself"},
+                {time: 59.7, text: "'How do I work this?'"},
+                {time: 61.8, text: "And you may ask yourself"},
+                {time: 64.0, text: "'Where is that large automobile?'"},
+                {time: 66.0, text: "And you may tell yourself"},
+                {time: 68.0, text: "'This is not my beautiful house!'"},
+                {time: 70.3, text: "And you may tell yourself"},
+                {time: 72.0, text: "'This is not my beautiful wife!'"},
+                {time: 74.0, text: "Letting the days go by!"},
+                {time: 76.0, text: "Let the water hold me down"},
+                {time: 78.0, text: "Letting the days go by!"},
+                {time: 80.0, text: "Water flowing underground"},
+                {time: 82.0, text: "Into the blue again"},
+                {time: 84.0, text: "After the money's gone"},
+                {time: 86.0, text: "Once in a lifetime!"},
+                {time: 88.0, text: "Water flowing underground"},
+                {time: 91.0, text: "Same as it ever was"},
+                {time: 93.0, text: "Same as it ever was"},
+                {time: 95.0, text: "Same as it ever was"},
+                {time: 97.0, text: "Same as it ever was"},
+                {time: 99.0, text: "Same as it ever was"},
+                {time: 101.0, text: "Same as it ever was"},
+                {time: 103.0, text: "Same as it ever was"},
+                {time: 105.0, text: "Same as it ever was"},
+                {time: 107.0, text: "Water dissolving, and water removing!"},
+                {time: 110.5, text: "There is water at the bottom of the ocean"},
+                {time: 113.8, text: "Under the water, carry the water"},
+                {time: 116.0, text: "Remove the water at the bottom of the ocean"},
+                {time: 119.5, text: "Water dissolving, and water removing!"},
+                {time: 123.0, text: "Letting the days go by!"},
+                {time: 125.0, text: "Let the water hold me down"},
+                {time: 127.0, text: "Letting the days go by!"},
+                {time: 129.0, text: "Water flowing underground"},
+                {time: 131.0, text: "Into the blue again"},
+                {time: 133.3, text: "Into the silent water"},
+                {time: 135.0, text: "Under the rocks and stones"},
+                {time: 137.0, text: "There is water underground"},
+                {time: 139.5, text: "Letting the days go by!"},
+                {time: 141.5, text: "Let the water hold me down"},
+                {time: 143.5, text: "Letting the days go by!"},
+                {time: 145.5, text: "Water flowing underground"},
+                {time: 147.5, text: "Into the blue again"},
+                {time: 149.5, text: "After the money's gone"},
+                {time: 151.8, text: "Once in a lifetime!"},
+                {time: 153.8, text: "Water flowing underground"},
+                {time: 155.8, text: "You may ask yourself"},
+                {time: 157.8, text: "'What is that beautiful house?'"},
+                {time: 160.0, text: "You may ask yourself"},
+                {time: 162.0, text: "'Where does that highway go to?'"},
+                {time: 164.0, text: "And you may ask yourself"},
+                {time: 166.0, text: "'Am I right? Am I wrong?'"},
+                {time: 168.0, text: "And you may say to yourself"},
+                {time: 169.5, text: "'My God! What have I done?!'"},
+                {time: 172.0, text: "Letting the days go by!"},
+                {time: 174.0, text: "Let the water hold me down"},
+                {time: 176.5, text: "Letting the days go by"},
+                {time: 178.0, text: "Water flowing underground"},
+                {time: 180.7, text: "Into the blue again"},
+                {time: 182.7, text: "Into the silent water"},
+                {time: 184.5, text: "Under the rocks and stones"},
+                {time: 186.7, text: "There is water underground"},
+                {time: 188.8, text: "Letting the days go by!"},
+                {time: 191.0, text: "Let the water hold me down"},
+                {time: 193.0, text: "Letting the days go by!"},
+                {time: 195.0, text: "Water flowing underground"},
+                {time: 197.0, text: "Into the blue again"},
+                {time: 199.0, text: "After the money's gone"},
+                {time: 201.0, text: "Once in a lifetime!"},
+                {time: 203.0, text: "Water flowing underground"},
+                {time: 205.0, text: "Same as it ever was"},
+                {time: 207.5, text: "Same as it ever was"},
+                {time: 209.5, text: "Same as it ever was"},
+                {time: 212.0, text: "And look where my hand was"},
+                {time: 214.0, text: "Time isn't holding up"},
+                {time: 216.0, text: "Time isn't after us"},
+                {time: 218.0, text: "Same as it ever was"},
+                {time: 220.0, text: "Same as it ever was"},
+                {time: 222.0, text: "Same as it ever was"},
+                {time: 224.0, text: "Same as it ever was"},
+                {time: 225.5, text: "Same as it ever was"},
+                {time: 227.5, text: "Same as it ever was"},
+                {time: 230.0, text: "Letting the days go by"},
+                {time: 231.5, text: "Same as it ever was"},
+                {time: 234.0, text: "And here, a twister comes, here comes the twister"},
+                {time: 238.0, text: "Same as it ever was (Letting the days go by!)"},
+                {time: 240.0, text: "Same as it ever was"},
+                {time: 242.0, text: "Same as it ever was (Letting the days go by!)"},
+                {time: 244.0, text: "Same as it ever was"},
+                {time: 246.3, text: "Once in a lifetime!"},
+                {time: 248.8, text: "Let the water hold me down"},
+                {time: 250.0, text: "Letting the days go by!"},
+                {time: 252.0, text: "Water flowing underground"},
+                {time: 255.0, text: "Into the blue again"}
             ];
 
             const audio = new Audio("OIAL.mp3");
-            audio.play().then(async () => {
-            commandInput.disabled = true;
-            const bias = 1;
-            for(let i = 0; i < lyrics.length; i++){
-                const delay = delays[i];
-                await new Promise(res => setTimeout(res, delay*bias));
-                await typeLineLyricOIAL(lyrics[i]);
-                
-            }
-            audio.addEventListener("ended", () => {
-                typeLineSystem("[SYS]: once_in_a_lifetime.ths - Audio playback completed.")
+            audio.play().then( async () => {
+                let lastLyricIndex = 0;
+                function checkLyrics(){
+                    const currentTime = audio.currentTime;
+                    for(let i = lastLyricIndex; i < lyrics.length; i++){
+                        if(currentTime >= lyrics[i].time){
+                            typeLineLyric(lyrics[i].text);
+                            lastLyricIndex = i + 1;
+                        }
+                    }
+                    if(!audio.ended){
+                        requestAnimationFrame(checkLyrics);
+                    } else {
+                        typeLineSystem("[SYS]: once_in_a_lifetime.ths - Audio playback completed.")
                 commandInput.disabled = false;
-            })
+                    }
+                }
+                requestAnimationFrame(checkLyrics);
             }).catch(error => console.error("Playback error", error));
 
         }
 
         if(filename === "this_must_be_the_place.ths"){
+            commandInput.disabled = true;
             typeLineSystem(`[SYS]: Loading ${filename}...`);
             // Simulate lyrics appearing slowly
             const lyrics = [
-                "Home",
-                "Is where I want to be",
-                "Pick me up, and turn me 'round",
-                "I feel numb",
-                "Born with a weak heart",
-                "I guess I must be having fun",
-                "The less we say about it, the better",
-                "We'll make it up as we go along",
-                "Feet on the ground, head in the sky",
-                "It's okay, I know nothing's wrong, nothing",
-                "Hi-yeah",
-                "I got plenty of time",
-                "Hi-yeah",
-                "You've got light in your eyes",
-                "And you're standing here beside me",
-                "I love the passing of time",
-                "Never for money, always for love",
-                "Cover up and say goodnight",
-                "Say goodnight",
-                "Home",
-                "Is where I want to be",
-                "But I guess I'm already there",
-                "I come home",
-                "She lifted up her wings",
-                "I guess that this must be the place",
-                "I can't tell one from another",
-                "Did I find you or you find me?",
-                "There was a time, before we were born",
-                "If someone asks, this is where I'll be",
-                "Where I'll be",
-                "Hi-yeah",
-                "We drift in and out",
-                "Hi-yeah",
-                "Sing into my mouth",
-                "Out of all those kinds of people",
-                "You got a face with a view",
-                "I'm just an animal looking for a home and",
-                "Share the same space for a minute or two",
-                "And you'll love me 'til my heart stops",
-                "Love me 'til I'm dead",
-                "Eyes that light up, eyes look through you",
-                "Cover up the blank spots, hit me on the head, I go",
-                "Ooo-o-o-ooh!"
-            ];
-
-            const delays = [
-               64000, 1500, 500, 2000, 2000, 500, 2000, 2000, 2000, 2000, 
-               2000, 1500, 4500, 1500, 4000, 2000, 3000, 2000, 1000, 38000, 
-               1500, 500, 2000, 2000, 500, 1800, 2000, 2000, 2000, 500, 
-               1000, 1500, 5000, 1500, 4300, 2200, 2000, 1000, 2000, 2000, 2500, 
-               2000, 1000
+                {time: 64.0, text: "Home"},
+                {time: 66.0, text: "Is where I want to be"},
+                {time: 67.5, text: "Pick me up, and turn me 'round"},
+                {time: 71.7, text: "I feel numb"},
+                {time: 74.5, text: "Born with a weak heart"},
+                {time: 76.5, text: "I guess I must be having fun"},
+                {time: 80.5, text: "The less we say about it, the better"},
+                {time: 85.0, text: "We'll make it up as we go along"},
+                {time: 89.0, text: "Feet on the ground, head in the sky"},
+                {time: 93.0, text: "It's okay, I know nothing's wrong, nothing"},
+                {time: 98.0, text: "Hi-yeah"},
+                {time: 100.0, text: "I got plenty of time"},
+                {time: 106.5, text: "Hi-yeah"},
+                {time: 108.3, text: "You've got light in your eyes"},
+                {time: 113.5, text: "And you're standing here beside me"},
+                {time: 118.8, text: "I love the passing of time"},
+                {time: 123.0, text: "Never for money, always for love"},
+                {time: 126.8, text: "Cover up and say goodnight"},
+                {time: 130.0, text: "Say goodnight"},
+                {time: 168.7, text: "Home"},
+                {time: 170.5, text: "Is where I want to be"},
+                {time: 172.0, text: "But I guess I'm already there"},
+                {time: 176.8, text: "I come home"},
+                {time: 179.0, text: "She lifted up her wings"},
+                {time: 181.0, text: "I guess that this must be the place"},
+                {time: 185.5, text: "I can't tell one from another"},
+                {time: 189.5, text: "Did I find you or you find me?"},
+                {time: 194.0, text: "There was a time, before we were born"},
+                {time: 198.0, text: "If someone asks, this is where I'll be"},
+                {time: 201.0, text: "Where I'll be"},
+                {time: 202.8, text: "Hi-yeah"},
+                {time: 205.0, text: "We drift in and out"},
+                {time: 211.0, text: "Hi-yeah"},
+                {time: 213.5, text: "Sing into my mouth"},
+                {time: 218.5, text: "Out of all those kinds of people"},
+                {time: 223.5, text: "You got a face with a view"},
+                {time: 227.8, text: "I'm just an animal looking for a home and"},
+                {time: 231.8, text: "Share the same space for a minute or two"},
+                {time: 235.0, text: "And you'll love me 'til my heart stops"},
+                {time: 240.5, text: "Love me 'til I'm dead"},
+                {time: 244.5, text: "Eyes that light up, eyes look through you"},
+                {time: 248.0, text: "Cover up the blank spots, hit me on the head, I go"},
+                {time: 252.3, text: "Ooo-o-o-ooh!"}
             ];
 
             const audio = new Audio("TMBTP.mp3");
-            audio.play().then(async () => {
-                commandInput.disabled = true;
-                for(let i = 0; i < lyrics.length; i++){
-                const delay = delays[i];
-                await new Promise(res => setTimeout(res, delay));
-                await typeLineLyric(lyrics[i]);
-            }
-            audio.addEventListener("ended", () => {
-                typeLineSystem("[SYS]: this_must_be_the_place.ths - Audio playback completed.")
+            audio.play().then( async () => {
+                let lastLyricIndex = 0;
+                function checkLyrics(){
+                    const currentTime = audio.currentTime;
+                    for(let i = lastLyricIndex; i < lyrics.length; i++){
+                        if(currentTime >= lyrics[i].time){
+                            typeLineLyric(lyrics[i].text);
+                            lastLyricIndex = i + 1;
+                        }
+                    }
+                    if(!audio.ended){
+                        requestAnimationFrame(checkLyrics);
+                    } else {
+                        typeLineSystem("[SYS]: this_must_be_the_place.ths - Audio playback completed.")
                 commandInput.disabled = false;
-            })
+                    }
+                }
+                requestAnimationFrame(checkLyrics);
             }).catch(error => console.error("Playback error", error));
 
-
-
         }
-
     }
 
     // Handles file scanning
