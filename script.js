@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "David,",
         "‎",
         "Seeing some weird activity in the system right now. Someone named 'alexB' just logged in?",
-        "Says here they have approved access, but how? The system was dead for ages.",
+        "Says here they have approved access, but how? The system has been dead for ages.",
         "There's no way someone could even apply for the beta test, we've shut down the website.",
         "‎",
         "I ran a quick trace, but everything that came out was a ping from our local servers.",
@@ -201,7 +201,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
         activeOutput = false;
-        commandInput.
         enableTerminal();
     }
 
@@ -344,8 +343,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 localStorage.setItem("loginString", "dbyrne");
                 commandInput.setAttribute("placeholder", "Insert command here (as dbyrne)");
                 login = "dbyrne";
-                commandInput.removeEventListener("keydown", enterKey);
-                console.log("Terminal disabled");
                 bootSequenceDB();
             }
             else{
